@@ -1,7 +1,36 @@
 import 'package:flutter/material.dart';
 
-class PenjumlahanPage extends StatelessWidget {
+// versi simpel
+/*class PenjumlahanPage extends StatefulWidget {
   const PenjumlahanPage({super.key});
+
+  @override
+  State<PenjumlahanPage> createState() => _PenjumlahanPageState();
+}
+
+class _PenjumlahanPageState extends State<PenjumlahanPage> {
+  final TextEditingController angka1Controller = TextEditingController();
+  final TextEditingController angka2Controller = TextEditingController();
+
+  double hasil = 0;
+
+  void tambah() {
+    double a = double.parse(angka1Controller.text);
+    double b = double.parse(angka2Controller.text);
+
+    setState(() {
+      hasil = a + b;
+    });
+  }
+
+  void kurang() {
+    double a = double.parse(angka1Controller.text);
+    double b = double.parse(angka2Controller.text);
+
+    setState(() {
+      hasil = a - b;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,8 +38,211 @@ class PenjumlahanPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Penjumlahan & Pengurangan"),
       ),
-      body: const Center(
-        child: Text("Halaman Penjumlahan & Pengurangan"),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: angka1Controller,
+              keyboardType: TextInputType.angka,
+              decoration: const InputDecoration(
+                labelText: "Masukkan Angka Pertama",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: angka2Controller,
+              keyboardType: TextInputType.angka,
+              decoration: const InputDecoration(
+                labelText: "Masukkan Angka Kedua",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: tambah,
+                  child: const Text("Tambah"),
+                ),
+                ElevatedButton(
+                  onPressed: kurang,
+                  child: const Text("Kurang"),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            Text(
+              "Hasil: $hasil",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}*/
+
+// versi mirip kalku rill
+class PenjumlahanPage extends StatefulWidget {
+  const PenjumlahanPage({super.key});
+
+  @override
+  State<PenjumlahanPage> createState() => _PenjumlahanPageState();
+}
+
+class _PenjumlahanPageState extends State<PenjumlahanPage> {
+
+  String currentInput = "";
+  String history = "";
+  double result = 0;
+  String operator = "";
+
+  void inputAngka(String angka) {
+    setState(() {
+      currentInput += angka;
+    });
+  }
+
+  void setOperator(String op) {
+    if (currentInput.isEmpty) return;
+
+    double value = double.parse(currentInput);
+
+    if (operator == "+") {
+      result += value;
+    } else if (operator == "-") {
+      result -= value;
+    } else {
+      result = value;
+    }
+
+    history += "$currentInput $op ";
+
+    operator = op;
+    currentInput = "";
+
+    setState(() {});
+  }
+
+  void hitungHasil() {
+    if (currentInput.isEmpty) return;
+
+    double value = double.parse(currentInput);
+
+    if (operator == "+") {
+      result += value;
+    } else if (operator == "-") {
+      result -= value;
+    }
+
+    setState(() {
+      history += "$currentInput =";
+      currentInput = result.toString();
+      result = 0;
+      operator = "";
+    });
+  }
+
+  void clear() {
+    setState(() {
+      currentInput = "";
+      history = "";
+      result = 0;
+      operator = "";
+    });
+  }
+
+  Widget tombol(String text, {VoidCallback? onPressed}) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 22),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Kalkulator Sederhana"),
+      ),
+      body: Column(
+        children: [
+
+          Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Text(
+              history,
+              style: const TextStyle(
+                fontSize: 20,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+
+          Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              currentInput.isEmpty ? "0" : currentInput,
+              style: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Row(
+            children: [
+              tombol("1", onPressed: () => inputAngka("1")),
+              tombol("2", onPressed: () => inputAngka("2")),
+              tombol("3", onPressed: () => inputAngka("3")),
+              tombol("+", onPressed: () => setOperator("+")),
+            ],
+          ),
+
+          Row(
+            children: [
+              tombol("4", onPressed: () => inputAngka("4")),
+              tombol("5", onPressed: () => inputAngka("5")),
+              tombol("6", onPressed: () => inputAngka("6")),
+              tombol("-", onPressed: () => setOperator("-")),
+            ],
+          ),
+
+          Row(
+            children: [
+              tombol("7", onPressed: () => inputAngka("7")),
+              tombol("8", onPressed: () => inputAngka("8")),
+              tombol("9", onPressed: () => inputAngka("9")),
+              tombol("=", onPressed: hitungHasil),
+            ],
+          ),
+
+          Row(
+            children: [
+              tombol("0", onPressed: () => inputAngka("0")),
+              tombol("C", onPressed: clear),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -13,11 +13,18 @@ class _LoginpageState extends State<Loginpage> {
   final TextEditingController passController = TextEditingController();
   bool isLogin = false;
 
+  Map<String, String> users = {
+    "furaihan": "108",
+    "martin": "092",
+    "hiero": "086",
+    "faisal": "097"
+  };
+
   void login() {
     String username = usernameController.text;
     String pass = passController.text;
 
-    if (username == "furaihan" && pass == "108") {
+    if (users.containsKey(username) && users[username] == pass) {
       setState(() {
         isLogin = true;
       });
