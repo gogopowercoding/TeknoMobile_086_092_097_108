@@ -9,82 +9,243 @@ class JumlahTotalPage extends StatefulWidget {
 
 class _JumlahTotalPageState extends State<JumlahTotalPage> {
 
-  final TextEditingController angka1 = TextEditingController();
-  final TextEditingController angka2 = TextEditingController();
-  final TextEditingController angka3 = TextEditingController();
-
+  final TextEditingController jumlahController = TextEditingController();
+  final List<TextEditingController> angkaControllers = [];
+  final _formJumlahKey = GlobalKey<FormState>();
   int total = 0;
+  bool inputSudahDibuat = false;
 
-  void hitungTotal() {
-    int a = int.tryParse(angka1.text) ?? 0;
-    int b = int.tryParse(angka2.text) ?? 0;
-    int c = int.tryParse(angka3.text) ?? 0;
+  void buatInput() {
+
+    if (!_formJumlahKey.currentState!.validate()) {
+      return;
+    }
+
+    int jumlah = int.parse(jumlahController.text);
+
+    angkaControllers.clear();
+
+    for (int i = 0; i < jumlah; i++) {
+      angkaControllers.add(TextEditingController());
+    }
 
     setState(() {
-      total = a + b + c;
+      inputSudahDibuat = true;
+      total = 0;
     });
+  }
+  void tambahField() {
+    setState(() {
+      angkaControllers.add(TextEditingController());
+    });
+  }
+
+  void kurangiField() {
+    if (angkaControllers.isNotEmpty) {
+      setState(() {
+        angkaControllers.removeLast().dispose();
+      });
+    }
+  }
+
+  void resetInput() {
+
+    for (var c in angkaControllers) {
+      c.dispose();
+    }
+
+    angkaControllers.clear();
+    jumlahController.clear();
+
+    setState(() {
+      inputSudahDibuat = false;
+      total = 0;
+    });
+  }
+
+  void hitungTotal() {
+
+    int hasil = 0;
+
+    for (var controller in angkaControllers) {
+
+      if (controller.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Semua field harus diisi")),
+        );
+        return;
+      }
+
+      int? angka = int.tryParse(controller.text);
+
+      if (angka == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Input harus berupa angka")),
+        );
+        return;
+      }
+
+      hasil += angka;
+    }
+
+    setState(() {
+      total = hasil;
+    });
+  }
+
+  String? validasiAngka(String value) {
+
+    if (value.isEmpty) {
+      return "Tidak boleh kosong";
+    }
+
+    if (!RegExp(r'^-?\d+$').hasMatch(value)) {
+      return "Harus angka";
+    }
+
+    return null;
+  }
+
+  @override
+  void dispose() {
+    jumlahController.dispose();
+    for (var c in angkaControllers) {
+      c.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Jumlah Total Angka"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
 
-            TextField(
-              controller: angka1,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Input angka 1",
-                border: OutlineInputBorder(),
-              ),
-            ),
+             
+              if (!inputSudahDibuat) ...[
 
-            const SizedBox(height: 10),
+                Form(
+                  key: _formJumlahKey,
+                  child: TextFormField(
+                    controller: jumlahController,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: const InputDecoration(
+                      labelText: "Berapa angka yang akan diinput?",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
 
-            TextField(
-              controller: angka2,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Input angka 2",
-                border: OutlineInputBorder(),
-              ),
-            ),
+                      if (value == null || value.isEmpty) {
+                        return "Jumlah angka harus diisi";
+                      }
 
-            const SizedBox(height: 10),
+                      if (!RegExp(r'^\d+$').hasMatch(value)) {
+                        return "Harus berupa angka";
+                      }
 
-            TextField(
-              controller: angka3,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Input angka 3",
-                border: OutlineInputBorder(),
-              ),
-            ),
+                      int jumlah = int.parse(value);
 
-            const SizedBox(height: 20),
+                      if (jumlah <= 0) {
+                        return "Jumlah harus lebih dari 0";
+                      }
 
-            ElevatedButton(
-              onPressed: hitungTotal,
-              child: const Text("Hitung Total"),
-            ),
+                      if (jumlah > 50) {
+                        return "Maksimal 50 input";
+                      }
 
-            const SizedBox(height: 20),
+                      return null;
+                    },
+                  ),
+                ),
 
-            Text(
-              "Total: $total",
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            )
+                const SizedBox(height: 15),
 
-          ],
+                ElevatedButton(
+                  onPressed: buatInput,
+                  child: const Text("Buat Input"),
+                ),
+              ],
+
+              if (inputSudahDibuat) ...[
+
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: angkaControllers.length,
+                  itemBuilder: (context, index) {
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: TextFormField(
+                        controller: angkaControllers[index],
+                        keyboardType: TextInputType.number,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => validasiAngka(value ?? ''),
+                        decoration: InputDecoration(
+                          labelText: "Angka ${index + 1}",
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    ElevatedButton(
+                      onPressed: tambahField,
+                      child: const Text("+ Field"),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    ElevatedButton(
+                      onPressed: kurangiField,
+                      child: const Text("- Field"),
+                    ),
+
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton(
+                  onPressed: hitungTotal,
+                  child: const Text("Hitung Total"),
+                ),
+
+                const SizedBox(height: 10),
+
+                ElevatedButton(
+                  onPressed: resetInput,
+                  child: const Text("Reset Input"),
+                ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  "Total: $total",
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ]
+
+            ],
+          ),
         ),
       ),
     );
