@@ -14,7 +14,27 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
   String hasilPrima = "";
 
   void cekBilangan() {
-    int angka = int.tryParse(angkaController.text) ?? 0;
+    String input = angkaController.text;
+
+    // ERROR 1: jika kosong
+    if (input.isEmpty) {
+      tampilkanError("Input tidak boleh kosong");
+      return;
+    }
+
+    int? angka = int.tryParse(input);
+
+    // ERROR 2: jika bukan angka
+    if (angka == null) {
+      tampilkanError("Input harus berupa angka");
+      return;
+    }
+
+    // ERROR 3: jika angka negatif
+    if (angka < 0) {
+      tampilkanError("Masukkan angka positif");
+      return;
+    }
 
     // cek ganjil genap
     if (angka % 2 == 0) {
@@ -40,6 +60,15 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
     hasilPrima = prima ? "Bilangan Prima" : "Bukan Bilangan Prima";
 
     setState(() {});
+  }
+
+  void tampilkanError(String pesan) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(pesan),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
