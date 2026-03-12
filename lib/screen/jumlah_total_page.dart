@@ -12,17 +12,14 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
   final TextEditingController jumlahController = TextEditingController();
   final List<TextEditingController> angkaControllers = [];
   final _formJumlahKey = GlobalKey<FormState>();
+
   int total = 0;
   bool inputSudahDibuat = false;
 
   void buatInput() {
-
-    if (!_formJumlahKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formJumlahKey.currentState!.validate()) return;
 
     int jumlah = int.parse(jumlahController.text);
-
     angkaControllers.clear();
 
     for (int i = 0; i < jumlah; i++) {
@@ -34,22 +31,17 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
       total = 0;
     });
   }
-  void tambahField() {
-    setState(() {
-      angkaControllers.add(TextEditingController());
-    });
-  }
+
+  void tambahField() => setState(() =>
+      angkaControllers.add(TextEditingController()));
 
   void kurangiField() {
     if (angkaControllers.isNotEmpty) {
-      setState(() {
-        angkaControllers.removeLast().dispose();
-      });
+      setState(() => angkaControllers.removeLast().dispose());
     }
   }
 
   void resetInput() {
-
     for (var c in angkaControllers) {
       c.dispose();
     }
@@ -64,45 +56,36 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
   }
 
   void hitungTotal() {
-
     int hasil = 0;
 
-    for (var controller in angkaControllers) {
+    for (var c in angkaControllers) {
 
-      if (controller.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Semua field harus diisi")),
-        );
+      if (c.text.isEmpty) {
+        _showSnack("Semua field harus diisi");
         return;
       }
 
-      int? angka = int.tryParse(controller.text);
+      int? angka = int.tryParse(c.text);
 
       if (angka == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Input harus berupa angka")),
-        );
+        _showSnack("Input harus berupa angka");
         return;
       }
 
       hasil += angka;
     }
 
-    setState(() {
-      total = hasil;
-    });
+    setState(() => total = hasil);
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 
   String? validasiAngka(String value) {
-
-    if (value.isEmpty) {
-      return "Tidak boleh kosong";
-    }
-
-    if (!RegExp(r'^-?\d+$').hasMatch(value)) {
-      return "Harus angka";
-    }
-
+    if (value.isEmpty) return "Tidak boleh kosong";
+    if (!RegExp(r'^-?\d+$').hasMatch(value)) return "Harus angka";
     return null;
   }
 
@@ -119,135 +102,143 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Jumlah Total Angka"),
-      ),
+      appBar: AppBar(title: const Text("Jumlah Total Angka")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-
-             
-              if (!inputSudahDibuat) ...[
-
-                Form(
-                  key: _formJumlahKey,
-                  child: TextFormField(
-                    controller: jumlahController,
-                    keyboardType: TextInputType.number,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: const InputDecoration(
-                      labelText: "Berapa angka yang akan diinput?",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-
-                      if (value == null || value.isEmpty) {
-                        return "Jumlah angka harus diisi";
-                      }
-
-                      if (!RegExp(r'^\d+$').hasMatch(value)) {
-                        return "Harus berupa angka";
-                      }
-
-                      int jumlah = int.parse(value);
-
-                      if (jumlah <= 0) {
-                        return "Jumlah harus lebih dari 0";
-                      }
-
-                      if (jumlah > 50) {
-                        return "Maksimal 50 input";
-                      }
-
-                      return null;
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-
-                ElevatedButton(
-                  onPressed: buatInput,
-                  child: const Text("Buat Input"),
-                ),
-              ],
-
-              if (inputSudahDibuat) ...[
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: angkaControllers.length,
-                  itemBuilder: (context, index) {
-
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: TextFormField(
-                        controller: angkaControllers[index],
-                        keyboardType: TextInputType.number,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => validasiAngka(value ?? ''),
-                        decoration: InputDecoration(
-                          labelText: "Angka ${index + 1}",
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-
-                    ElevatedButton(
-                      onPressed: tambahField,
-                      child: const Text("+ Field"),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    ElevatedButton(
-                      onPressed: kurangiField,
-                      child: const Text("- Field"),
-                    ),
-
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: hitungTotal,
-                  child: const Text("Hitung Total"),
-                ),
-
-                const SizedBox(height: 10),
-
-                ElevatedButton(
-                  onPressed: resetInput,
-                  child: const Text("Reset Input"),
-                ),
-
-                const SizedBox(height: 20),
-
-                Text(
-                  "Total: $total",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ]
-
-            ],
-          ),
+          child: inputSudahDibuat
+              ? _buildInputAngka()
+              : _buildInputJumlah(),
         ),
       ),
+    );
+  }
+
+  Widget _buildInputJumlah() {
+    return Column(
+      children: [
+
+        Form(
+          key: _formJumlahKey,
+          child: TextFormField(
+            controller: jumlahController,
+            keyboardType: TextInputType.number,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: const InputDecoration(
+              labelText: "Berapa angka yang akan diinput?",
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+
+              if (value == null || value.isEmpty) {
+                return "Jumlah angka harus diisi";
+              }
+
+              if (!RegExp(r'^\d+$').hasMatch(value)) {
+                return "Harus berupa angka";
+              }
+
+              int jumlah = int.parse(value);
+
+              if (jumlah <= 0) {
+                return "Jumlah harus lebih dari 0";
+              }
+
+              if (jumlah > 50) {
+                return "Maksimal 50 input";
+              }
+
+              return null;
+            },
+          ),
+        ),
+
+        const SizedBox(height: 15),
+
+        ElevatedButton(
+          onPressed: buatInput,
+          child: const Text("Buat Input"),
+        ),
+
+      ],
+    );
+  }
+
+  Widget _buildInputAngka() {
+    return Column(
+      children: [
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: angkaControllers.length,
+          itemBuilder: (context, index) {
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: TextFormField(
+                controller: angkaControllers[index],
+                keyboardType: TextInputType.number,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (v) => validasiAngka(v ?? ''),
+                decoration: InputDecoration(
+                  labelText: "Angka ${index + 1}",
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            );
+          },
+        ),
+
+        const SizedBox(height: 10),
+
+        _buildControlButtons(),
+
+        const SizedBox(height: 20),
+
+        ElevatedButton(
+          onPressed: hitungTotal,
+          child: const Text("Hitung Total"),
+        ),
+
+        const SizedBox(height: 10),
+
+        ElevatedButton(
+          onPressed: resetInput,
+          child: const Text("Reset Input"),
+        ),
+
+        const SizedBox(height: 20),
+
+        Text(
+          "Total: $total",
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildControlButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+
+        ElevatedButton(
+          onPressed: tambahField,
+          child: const Text("+ Field"),
+        ),
+
+        const SizedBox(width: 10),
+
+        ElevatedButton(
+          onPressed: kurangiField,
+          child: const Text("- Field"),
+        ),
+
+      ],
     );
   }
 }
