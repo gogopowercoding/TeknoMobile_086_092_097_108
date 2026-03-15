@@ -88,7 +88,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Kalkulator Sederhana"),
+        title: const Text("Penjumlahan dan Pengurangan"),
       ),
       body: Column(
         children: [
