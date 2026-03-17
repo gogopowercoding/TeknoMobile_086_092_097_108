@@ -8,237 +8,143 @@ class JumlahTotalPage extends StatefulWidget {
 }
 
 class _JumlahTotalPageState extends State<JumlahTotalPage> {
+  final TextEditingController textController = TextEditingController();
 
-  final TextEditingController jumlahController = TextEditingController();
-  final List<TextEditingController> angkaControllers = [];
-  final _formJumlahKey = GlobalKey<FormState>();
+  int jumlahHuruf = 0;
+  int jumlahSimbol = 0;
+  int jumlahSpasi = 0;
+  double totalAngka = 0;
 
-  int total = 0;
-  bool inputSudahDibuat = false;
+  void hitung() {
+    String input = textController.text;
 
-  void buatInput() {
-    if (!_formJumlahKey.currentState!.validate()) return;
+    int huruf = 0;
+    int simbol = 0;
+    int spasi = 0;
+    double angka = 0;
 
-    int jumlah = int.parse(jumlahController.text);
-    angkaControllers.clear();
+    String buffer = "";
 
-    for (int i = 0; i < jumlah; i++) {
-      angkaControllers.add(TextEditingController());
+    for (int i = 0; i < input.length; i++) {
+      String char = input[i];
+
+      if (RegExp(r'[0-9\.\-]').hasMatch(char)) {
+        buffer += char;
+      } else {
+        if (buffer.isNotEmpty) {
+          double? nilai = double.tryParse(buffer);
+          if (nilai != null) angka += nilai;
+          buffer = "";
+        }
+
+        if (RegExp(r'[a-zA-Z]').hasMatch(char)) {
+          huruf++;
+        } else if (char == " ") {
+          spasi++;
+        } else {
+          simbol++;
+        }
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      double? nilai = double.tryParse(buffer);
+      if (nilai != null) angka += nilai;
     }
 
     setState(() {
-      inputSudahDibuat = true;
-      total = 0;
+      jumlahHuruf = huruf;
+      jumlahSimbol = simbol;
+      jumlahSpasi = spasi;
+      totalAngka = angka;
     });
   }
 
-  void tambahField() => setState(() =>
-      angkaControllers.add(TextEditingController()));
-
-  void kurangiField() {
-    if (angkaControllers.isNotEmpty) {
-      setState(() => angkaControllers.removeLast().dispose());
-    }
-  }
-
-  void resetInput() {
-    for (var c in angkaControllers) {
-      c.dispose();
-    }
-
-    angkaControllers.clear();
-    jumlahController.clear();
+  void clearInput() {
+    textController.clear();
 
     setState(() {
-      inputSudahDibuat = false;
-      total = 0;
+      jumlahHuruf = 0;
+      jumlahSimbol = 0;
+      jumlahSpasi = 0;
+      totalAngka = 0;
     });
-  }
-
-  void hitungTotal() {
-    int hasil = 0;
-
-    for (var c in angkaControllers) {
-
-      if (c.text.isEmpty) {
-        _showSnack("Semua field harus diisi");
-        return;
-      }
-
-      int? angka = int.tryParse(c.text);
-
-      if (angka == null) {
-        _showSnack("Input harus berupa angka");
-        return;
-      }
-
-      hasil += angka;
-    }
-
-    setState(() => total = hasil);
-  }
-
-  void _showSnack(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  String? validasiAngka(String value) {
-    if (value.isEmpty) return "Tidak boleh kosong";
-    if (!RegExp(r'^-?\d+$').hasMatch(value)) return "Harus angka";
-    return null;
   }
 
   @override
   void dispose() {
-    jumlahController.dispose();
-    for (var c in angkaControllers) {
-      c.dispose();
-    }
+    textController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(title: const Text("Jumlah Total Angka")),
+      appBar: AppBar(
+        title: const Text("Analisis Teks "),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: inputSudahDibuat
-              ? _buildInputAngka()
-              : _buildInputJumlah(),
+        child: Column(
+          children: [
+
+            TextField(
+              controller: textController,
+              decoration: const InputDecoration(
+                labelText: "Masukkan teks bebas",
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                ElevatedButton(
+                  onPressed: hitung,
+                  child: const Text("Hitung"),
+                ),
+
+                const SizedBox(width: 15),
+
+                ElevatedButton(
+                  onPressed: clearInput,
+                  child: const Text("Clear"),
+                ),
+
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            Text("Jumlah Huruf: $jumlahHuruf",
+                style: const TextStyle(fontSize: 18)),
+
+            const SizedBox(height: 10),
+
+            Text("Jumlah Simbol: $jumlahSimbol",
+                style: const TextStyle(fontSize: 18)),
+
+            const SizedBox(height: 10),
+
+            Text("Jumlah Spasi: $jumlahSpasi",
+                style: const TextStyle(fontSize: 18)),
+
+            const SizedBox(height: 10),
+
+            Text(
+              "Total Angka: $totalAngka",
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildInputJumlah() {
-    return Column(
-      children: [
-
-        Form(
-          key: _formJumlahKey,
-          child: TextFormField(
-            controller: jumlahController,
-            keyboardType: TextInputType.number,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            decoration: const InputDecoration(
-              labelText: "Berapa angka yang akan diinput?",
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-
-              if (value == null || value.isEmpty) {
-                return "Jumlah angka harus diisi";
-              }
-
-              if (!RegExp(r'^\d+$').hasMatch(value)) {
-                return "Harus berupa angka";
-              }
-
-              int jumlah = int.parse(value);
-
-              if (jumlah <= 0) {
-                return "Jumlah harus lebih dari 0";
-              }
-
-              if (jumlah > 50) {
-                return "Maksimal 50 input";
-              }
-
-              return null;
-            },
-          ),
-        ),
-
-        const SizedBox(height: 15),
-
-        ElevatedButton(
-          onPressed: buatInput,
-          child: const Text("Buat Input"),
-        ),
-
-      ],
-    );
-  }
-
-  Widget _buildInputAngka() {
-    return Column(
-      children: [
-
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: angkaControllers.length,
-          itemBuilder: (context, index) {
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: TextFormField(
-                controller: angkaControllers[index],
-                keyboardType: TextInputType.number,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (v) => validasiAngka(v ?? ''),
-                decoration: InputDecoration(
-                  labelText: "Angka ${index + 1}",
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            );
-          },
-        ),
-
-        const SizedBox(height: 10),
-
-        _buildControlButtons(),
-
-        const SizedBox(height: 20),
-
-        ElevatedButton(
-          onPressed: hitungTotal,
-          child: const Text("Hitung Total"),
-        ),
-
-        const SizedBox(height: 10),
-
-        ElevatedButton(
-          onPressed: resetInput,
-          child: const Text("Reset Input"),
-        ),
-
-        const SizedBox(height: 20),
-
-        Text(
-          "Total: $total",
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildControlButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-
-        ElevatedButton(
-          onPressed: tambahField,
-          child: const Text("+ Field"),
-        ),
-
-        const SizedBox(width: 10),
-
-        ElevatedButton(
-          onPressed: kurangiField,
-          child: const Text("- Field"),
-        ),
-
-      ],
     );
   }
 }

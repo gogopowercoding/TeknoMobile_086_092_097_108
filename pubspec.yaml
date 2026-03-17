@@ -37,6 +37,9 @@ dependencies:
 
   decimal: ^2.3.3
 
+  intl: ^0.18.0
+  hijri: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

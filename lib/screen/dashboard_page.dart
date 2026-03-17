@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:teknomobile_086_092_097_108/screen/konversitanggalhijriah_page.dart';
 import 'login_page.dart';
 
 import 'penjumlahan_page.dart';
@@ -45,6 +46,12 @@ class _DashboardPageState extends State<DashboardPage> {
       "icon": Icons.change_history,
       "page": const PiramidPage()
     },
+    {
+      "title": "Konversi Tanggal Hijriah",
+      "icon": Icons.calendar_today,
+      "page": const KonversiTanggalHijriahPage()
+    },
+
   ];
 
   @override
