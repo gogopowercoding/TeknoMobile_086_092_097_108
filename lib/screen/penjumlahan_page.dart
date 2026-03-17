@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:decimal/decimal.dart';
 
 class PenjumlahanPage extends StatefulWidget {
   const PenjumlahanPage({super.key});
@@ -11,7 +12,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
 
   String currentInput = "";
   String history = "";
-  double result = 0;
+  Decimal result = Decimal.zero;
   String operator = "";
 
   void inputAngka(String angka) {
@@ -20,10 +21,32 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
     });
   }
 
-  void setOperator(String op) {
-    if (currentInput.isEmpty) return;
+  void inputTitik() {
+    setState(() {
+      if (!currentInput.contains(".")) {
+        if (currentInput.isEmpty) {
+          currentInput = "0.";
+        } else {
+          currentInput += ".";
+        }
+      }
+    });
+  }
 
-    double value = double.parse(currentInput);
+  void inputMinus() {
+    setState(() {
+      if (currentInput.isEmpty) {
+        currentInput = "-";
+      } else {
+        setOperator("-");
+      }
+    });
+  }
+
+  void setOperator(String op) {
+    if (currentInput.isEmpty || currentInput == "-") return;
+
+    Decimal value = Decimal.parse(currentInput);
 
     if (operator == "+") {
       result += value;
@@ -42,9 +65,9 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
   }
 
   void hitungHasil() {
-    if (currentInput.isEmpty) return;
+    if (currentInput.isEmpty || currentInput == "-") return;
 
-    double value = double.parse(currentInput);
+    Decimal value = Decimal.parse(currentInput);
 
     if (operator == "+") {
       result += value;
@@ -55,7 +78,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
     setState(() {
       history += "$currentInput =";
       currentInput = result.toString();
-      result = 0;
+      result = Decimal.zero;
       operator = "";
     });
   }
@@ -64,7 +87,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
     setState(() {
       currentInput = "";
       history = "";
-      result = 0;
+      result = Decimal.zero;
       operator = "";
     });
   }
@@ -131,7 +154,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
               tombol("4", onPressed: () => inputAngka("4")),
               tombol("5", onPressed: () => inputAngka("5")),
               tombol("6", onPressed: () => inputAngka("6")),
-              tombol("-", onPressed: () => setOperator("-")),
+              tombol("-", onPressed: () => inputMinus()),
             ],
           ),
 
@@ -147,6 +170,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
           Row(
             children: [
               tombol("0", onPressed: () => inputAngka("0")),
+              tombol(".", onPressed: () => inputTitik()),
               tombol("C", onPressed: clear),
             ],
           ),

@@ -30,12 +30,6 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
       return;
     }
 
-    // ERROR 3: jika angka negatif
-    if (angka < 0) {
-      tampilkanError("Masukkan angka positif");
-      return;
-    }
-
     // cek ganjil genap
     if (angka % 2 == 0) {
       hasilGanjilGenap = "Genap";
