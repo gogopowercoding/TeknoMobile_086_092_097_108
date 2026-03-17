@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,8 @@ class _StopwatchPageState extends State<StopwatchPage> {
   bool _isRunning = false;
   final List<int> _laps = [];
 
+  final Duration maxDuration = Duration(hours: 24);
+
   void _startPause() {
     if (_isRunning) {
       _pause();
@@ -23,7 +26,8 @@ class _StopwatchPageState extends State<StopwatchPage> {
 
     _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
       setState(() {
-        _elapsedMilliseconds += 10;
+        _elapsedMilliseconds =
+            (_elapsedMilliseconds + 10) % maxDuration.inMilliseconds;
       });
     });
 
@@ -55,17 +59,30 @@ class _StopwatchPageState extends State<StopwatchPage> {
     });
   }
 
+  void _jumpToLimit() {
+    setState(() {
+      _elapsedMilliseconds = maxDuration.inMilliseconds - 1000;
+    });
+  }
+
   String _formatTime(int ms) {
     final hours = ms ~/ Duration.millisecondsPerHour;
-    final minutes = (ms % Duration.millisecondsPerHour) ~/ Duration.millisecondsPerMinute;
-    final seconds = (ms % Duration.millisecondsPerMinute) ~/ Duration.secondsPerMinute;
-    final centis = (ms % Duration.secondsPerMinute) ~/ 10 % 100;
+    final minutes =
+        (ms % Duration.millisecondsPerHour) ~/ Duration.millisecondsPerMinute;
+    final seconds =
+        (ms % Duration.millisecondsPerMinute) ~/ 1000;
+    final centis = (ms % 1000) ~/ 10;
 
     if (hours > 0) {
-      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${centis.toString().padLeft(2, '0')}';
+      return '${hours.toString().padLeft(2, '0')}:'
+          '${minutes.toString().padLeft(2, '0')}:'
+          '${seconds.toString().padLeft(2, '0')}.'
+          '${centis.toString().padLeft(2, '0')}';
     }
 
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${centis.toString().padLeft(2, '0')}';
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${seconds.toString().padLeft(2, '0')}.'
+        '${centis.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -90,7 +107,8 @@ class _StopwatchPageState extends State<StopwatchPage> {
                 children: [
                   Text(
                     _formatTime(_elapsedMilliseconds),
-                    style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 64, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
@@ -99,16 +117,12 @@ class _StopwatchPageState extends State<StopwatchPage> {
                     children: [
                       ElevatedButton(
                         onPressed: _startPause,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        ),
                         child: Text(_isRunning ? 'Pause' : 'Start'),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
                         onPressed: _reset,
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           backgroundColor: Colors.redAccent,
                         ),
                         child: const Text('Reset'),
@@ -117,12 +131,16 @@ class _StopwatchPageState extends State<StopwatchPage> {
                       ElevatedButton(
                         onPressed: _lap,
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           backgroundColor: Colors.green,
                         ),
                         child: const Text('Lap'),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _jumpToLimit,
+                    child: const Text('Test 24h'),
                   ),
                 ],
               ),
@@ -130,15 +148,24 @@ class _StopwatchPageState extends State<StopwatchPage> {
             const Divider(),
             Expanded(
               child: _laps.isEmpty
-                  ? const Center(child: Text('No lap recorded yet', style: TextStyle(fontSize: 16)))
+                  ? const Center(child: Text('No lap recorded yet'))
                   : ListView.separated(
                       itemCount: _laps.length,
                       separatorBuilder: (_, __) => const Divider(),
                       itemBuilder: (context, index) {
                         final lapTime = _laps[index];
                         return ListTile(
-                          title: Text('Lap ${_laps.length - index}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          trailing: Text(_formatTime(lapTime), style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()])),
+                          title: Text(
+                            'Lap ${_laps.length - index}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Text(
+                            _formatTime(lapTime),
+                            style: const TextStyle(
+                              fontFeatures: [FontFeature.tabularFigures()],
+                            ),
+                          ),
                         );
                       },
                     ),
