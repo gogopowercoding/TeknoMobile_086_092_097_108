@@ -1,9 +1,7 @@
 import '../Models/hijri_date.dart';
 
 class HijriConverter {
-  // =====================
   // Gregorian → JD
-  // =====================
   static int gregorianToJD(int year, int month, int day) {
     if (month <= 2) {
       year -= 1;
@@ -20,9 +18,7 @@ class HijriConverter {
         1524;
   }
 
-  // =====================
   // JD → Hijri
-  // =====================
   static HijriDate jdToHijri(int jd) {
     int l = jd - 1948440 + 10632;
     int n = (l - 1) ~/ 10631;
@@ -47,9 +43,8 @@ class HijriConverter {
     return HijriDate(day: day, month: month, year: year);
   }
 
-  // =====================
   // Hijri → JD
-  // =====================
+
   static int hijriToJD(int year, int month, int day) {
     return (day +
             ((29.5 * (month - 1)).ceil()) +
@@ -59,9 +54,7 @@ class HijriConverter {
             1);
   }
 
-  // =====================
   // JD → Gregorian
-  // =====================
   static DateTime jdToGregorian(int jd) {
     int l = jd + 68569;
     int n = (4 * l) ~/ 146097;

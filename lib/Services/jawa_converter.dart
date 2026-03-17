@@ -19,12 +19,11 @@ class JawaConverter {
     "Kliwon"
   ];
 
-  /// Konversi dari DateTime ke Jawa
+  /// Konversi dari DateTime ke jawir
   static JawaDate fromGregorian(DateTime date) {
     // Hari biasa
     String hari = hariList[date.weekday % 7];
 
-    // 🔥 Kunci: hitung pasaran
     // Basis: 1 Januari 1900 = Pon
     DateTime base = DateTime(1900, 1, 1);
 
