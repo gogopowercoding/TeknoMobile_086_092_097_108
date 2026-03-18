@@ -25,11 +25,12 @@ class _KonversiTanggalHijriahPageState
   int? tahunHijriah;
 
   void pilihTanggal() async {
+    DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedDate ?? now,
       firstDate: DateTime(622, 7, 16),
-      lastDate: DateTime(5000000000),
+      lastDate: DateTime(9999, 12, 31),
     );
 
     if (picked != null) {
@@ -125,14 +126,49 @@ class _KonversiTanggalHijriahPageState
                 setState(() {
                   isMasehiToHijri = val;
                   hasil = "";
+                  selectedDate = null;
+                  hariHijriah = null;
+                  bulanHijriah = null;
+                  tahunHijriah = null;
                 });
               },
             ),
 
-            ElevatedButton(
-              onPressed: pilihTanggal,
-              child: const Text("Pilih Tanggal"),
-            ),
+            if (isMasehiToHijri) ...[
+              ElevatedButton(
+                onPressed: pilihTanggal,
+                child: const Text("Pilih Tanggal"),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                selectedDate != null
+                    ? "Tanggal terpilih: ${formatTanggal(selectedDate!)}"
+                    : "Belum memilih tanggal",
+                style: const TextStyle(fontSize: 16),
+              ),
+            ] else ...[
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Hari Hijriah"),
+                onChanged: (value) {
+                  hariHijriah = int.tryParse(value);
+                },
+              ),
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Bulan Hijriah"),
+                onChanged: (value) {
+                  bulanHijriah = int.tryParse(value);
+                },
+              ),
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Tahun Hijriah"),
+                onChanged: (value) {
+                  tahunHijriah = int.tryParse(value);
+                },
+              ),
+            ],
 
             const SizedBox(height: 20),
 

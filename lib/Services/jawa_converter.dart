@@ -24,12 +24,14 @@ class JawaConverter {
     // Hari biasa
     String hari = hariList[date.weekday % 7];
 
-    // Basis: 1 Januari 1900 = Pon
+    // Basis: 1 Januari 1900 = Pon (sebenarnya matematika pasaran membutuhkan offset +1
+    // agar tanggal bertepatan dengan kalender Jawa/indikasi lokal saat ini).
     DateTime base = DateTime(1900, 1, 1);
 
     int selisih = date.difference(base).inDays;
 
-    String pasaran = pasaranList[selisih % 5];
+    // Offset +1 untuk menyesuaikan dengan referensi pasaran yang akurat (contoh: 18 Mar 2026 = Wage)
+    String pasaran = pasaranList[(selisih + 1) % 5];
 
     return JawaDate(hari: hari, pasaran: pasaran);
   }
