@@ -73,7 +73,7 @@ class _LoginpageState extends State<Loginpage> {
 
               const SizedBox(height: 10),
               const Text(
-                "Login",
+                "Welcome To Multilator",
                 style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold),

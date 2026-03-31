@@ -79,7 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
           },
         ),
 
-        title: Text("Welcome, ${widget.username}!"),
+        title: Text("Halo ${widget.username}, selamat datang!"),
       ),
 
       body: Padding(
@@ -94,6 +94,7 @@ class _DashboardPageState extends State<DashboardPage> {
           itemCount: menu.length,
           itemBuilder: (context, index) {
             return Card(
+              color: Colors.blue[50],
               elevation: 4.0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
@@ -111,18 +112,23 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      menu[index]['icon'],
-                      size: 48.0,
-                      color: Theme.of(context).primaryColor,
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.blue[300],
+                      child: Icon(
+                        menu[index]['icon'],
+                        size: 30.0,
+                        color: Colors.white,
+                      ),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 12.0),
                     Text(
                       menu[index]['title'],
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 14.0,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blueAccent,
                       ),
                     ),
                   ],

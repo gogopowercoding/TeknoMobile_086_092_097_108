@@ -103,6 +103,9 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
               children: [
 
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
                   onPressed: hitung,
                   child: const Text("Hitung"),
                 ),
@@ -110,6 +113,9 @@ class _JumlahTotalPageState extends State<JumlahTotalPage> {
                 const SizedBox(width: 15),
 
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
                   onPressed: clearInput,
                   child: const Text("Clear"),
                 ),
