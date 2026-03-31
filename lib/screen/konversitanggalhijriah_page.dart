@@ -24,6 +24,23 @@ class _KonversiTanggalHijriahPageState
   int? bulanHijriah;
   int? tahunHijriah;
 
+  List<int> hariList = [];
+
+  final List<String> namaBulanHijriah = [
+    "Muharram",
+    "Safar",
+    "Rabiul Awal",
+    "Rabiul Akhir",
+    "Jumadil Awal",
+    "Jumadil Akhir",
+    "Rajab",
+    "Sya'ban",
+    "Ramadhan",
+    "Syawal",
+    "Dzulqa'dah",
+    "Dzulhijjah"
+  ];
+
   void pilihTanggal() async {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
@@ -37,6 +54,32 @@ class _KonversiTanggalHijriahPageState
       setState(() {
         selectedDate = picked;
         hasil = "";
+      });
+    }
+  }
+
+  // 🔥 CEK TAHUN KABISAT HIJRIAH
+  bool isLeapYearHijri(int year) {
+    return ((11 * year + 14) % 30) < 11;
+  }
+
+  // 🔥 HITUNG MAX HARI
+  int getMaxHari(int bulan, int tahun) {
+    if (bulan == 12) {
+      return isLeapYearHijri(tahun) ? 30 : 29;
+    }
+    return (bulan % 2 == 1) ? 30 : 29;
+  }
+
+  // 🔥 UPDATE LIST HARI OTOMATIS
+  void updateHariList() {
+    if (bulanHijriah != null && tahunHijriah != null) {
+      int maxHari = getMaxHari(bulanHijriah!, tahunHijriah!);
+      setState(() {
+        hariList = List.generate(maxHari, (i) => i + 1);
+        if (hariHijriah != null && hariHijriah! > maxHari) {
+          hariHijriah = null;
+        }
       });
     }
   }
@@ -92,18 +135,17 @@ class _KonversiTanggalHijriahPageState
         .showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  void clearAll() {
+  String formatTanggal(DateTime date) {
+    return DateFormat("dd MMMM yyyy", "id_ID").format(date);
+  }
+
+  void resetInput() {
     setState(() {
-      hasil = "";
-      selectedDate = null;
       hariHijriah = null;
       bulanHijriah = null;
       tahunHijriah = null;
+      hariList = [];
     });
-  }
-
-  String formatTanggal(DateTime date) {
-    return DateFormat("dd MMMM yyyy", "id_ID").format(date);
   }
 
   @override
@@ -127,9 +169,7 @@ class _KonversiTanggalHijriahPageState
                   isMasehiToHijri = val;
                   hasil = "";
                   selectedDate = null;
-                  hariHijriah = null;
-                  bulanHijriah = null;
-                  tahunHijriah = null;
+                  resetInput();
                 });
               },
             ),
@@ -142,30 +182,50 @@ class _KonversiTanggalHijriahPageState
               const SizedBox(height: 8),
               Text(
                 selectedDate != null
-                    ? "Tanggal terpilih: ${formatTanggal(selectedDate!)}"
+                    ? "Tanggal: ${formatTanggal(selectedDate!)}"
                     : "Belum memilih tanggal",
-                style: const TextStyle(fontSize: 16),
               ),
             ] else ...[
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Hari Hijriah"),
-                onChanged: (value) {
-                  hariHijriah = int.tryParse(value);
-                },
-              ),
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Bulan Hijriah"),
-                onChanged: (value) {
-                  bulanHijriah = int.tryParse(value);
-                },
-              ),
+              // TAHUN
               TextField(
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: "Tahun Hijriah"),
                 onChanged: (value) {
                   tahunHijriah = int.tryParse(value);
+                  updateHariList();
+                },
+              ),
+
+              const SizedBox(height: 10),
+
+              // BULAN DROPDOWN
+              DropdownButtonFormField<int>(
+                decoration: const InputDecoration(labelText: "Bulan Hijriah"),
+                items: List.generate(12, (index) {
+                  return DropdownMenuItem(
+                    value: index + 1,
+                    child: Text(namaBulanHijriah[index]),
+                  );
+                }),
+                onChanged: (value) {
+                  bulanHijriah = value;
+                  updateHariList();
+                },
+              ),
+
+              const SizedBox(height: 10),
+
+              // HARI DROPDOWN DINAMIS
+              DropdownButtonFormField<int>(
+                decoration: const InputDecoration(labelText: "Hari"),
+                items: hariList.map((hari) {
+                  return DropdownMenuItem(
+                    value: hari,
+                    child: Text(hari.toString()),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  hariHijriah = value;
                 },
               ),
             ],
