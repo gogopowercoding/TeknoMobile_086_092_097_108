@@ -120,13 +120,19 @@ class _PiramidPageState extends State<PiramidPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                      ),
                       onPressed: _hitung,
                       child: const Text('Hitung'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: OutlinedButton(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                       onPressed: _reset,
                       child: const Text('Reset'),
                     ),

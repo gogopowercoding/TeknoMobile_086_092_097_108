@@ -26,7 +26,7 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
 
     // ERROR 2: jika bukan angka
     if (angka == null) {
-      tampilkanError("Input harus berupa angka");
+      tampilkanError("Input harus berupa bilangan bulat");
       return;
     }
 
@@ -87,6 +87,9 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
             const SizedBox(height: 20),
 
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
               onPressed: cekBilangan,
               child: const Text("Cek Bilangan"),
             ),

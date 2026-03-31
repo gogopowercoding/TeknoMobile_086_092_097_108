@@ -58,12 +58,12 @@ class _KonversiTanggalHijriahPageState
     }
   }
 
-  // 🔥 CEK TAHUN KABISAT HIJRIAH
+  //cek tahun kabisat hijirah
   bool isLeapYearHijri(int year) {
     return ((11 * year + 14) % 30) < 11;
   }
 
-  // 🔥 HITUNG MAX HARI
+  //hitung maksimum hari
   int getMaxHari(int bulan, int tahun) {
     if (bulan == 12) {
       return isLeapYearHijri(tahun) ? 30 : 29;
@@ -71,7 +71,7 @@ class _KonversiTanggalHijriahPageState
     return (bulan % 2 == 1) ? 30 : 29;
   }
 
-  // 🔥 UPDATE LIST HARI OTOMATIS
+  //update hari otomatis
   void updateHariList() {
     if (bulanHijriah != null && tahunHijriah != null) {
       int maxHari = getMaxHari(bulanHijriah!, tahunHijriah!);
@@ -176,6 +176,9 @@ class _KonversiTanggalHijriahPageState
 
             if (isMasehiToHijri) ...[
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue
+                ),
                 onPressed: pilihTanggal,
                 child: const Text("Pilih Tanggal"),
               ),
@@ -233,6 +236,9 @@ class _KonversiTanggalHijriahPageState
             const SizedBox(height: 20),
 
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
               onPressed: konversi,
               child: const Text("Konversi"),
             ),

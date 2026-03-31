@@ -80,6 +80,43 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
 
         title: Text("Halo ${widget.username}, selamat datang!"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.group),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Anggota Kelompok Multilator'),
+                    content: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('123230086 Hiero Purbandono'),
+                        SizedBox(height: 8),
+                        Text('123230092 Martin Aji Nugraha'),
+                        SizedBox(height: 8),
+                        Text('123230097 Faisal Dani Noto Leogowo'),
+                        SizedBox(height: 8),
+                        Text('123230108 Furraihan Al Harits'),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Tutup'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+
       ),
 
       body: Padding(
