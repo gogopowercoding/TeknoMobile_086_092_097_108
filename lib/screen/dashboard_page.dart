@@ -7,6 +7,7 @@ import 'ganjil_genap_page.dart';
 import 'jumlah_total_page.dart';
 import 'stopwatch_page.dart';
 import 'piramid_page.dart';
+import 'age_calculator_page.dart';
 
 class DashboardPage extends StatefulWidget {
 
@@ -51,6 +52,11 @@ class _DashboardPageState extends State<DashboardPage> {
       "icon": Icons.calendar_today,
       "page": const KonversiTanggalHijriahPage()
     },
+    {
+      "title": "Kalkulator Umur",
+      "icon": Icons.cake,
+      "page": const AgeCalculatorPage()
+    },
 
   ];
 
@@ -76,28 +82,55 @@ class _DashboardPageState extends State<DashboardPage> {
         title: Text("Welcome, ${widget.username}!"),
       ),
 
-      body: ListView.builder(
-        itemCount: menu.length,
-        itemBuilder: (context, index) {
-
-          return Card(
-            margin: const EdgeInsets.all(10),
-
-            child: ListTile(
-              leading: Icon(menu[index]['icon']),
-              title: Text(menu[index]['title']),
-
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => menu[index]['page'],
-                  ),
-                );
-              },
-            ),
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: menu.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => menu[index]['page'],
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      menu[index]['icon'],
+                      size: 48.0,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      menu[index]['title'],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
