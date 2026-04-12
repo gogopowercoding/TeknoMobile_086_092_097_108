@@ -79,8 +79,6 @@ class _LoginpageState extends State<Loginpage> {
                     fontWeight: FontWeight.bold),
               ),
 
-              const Text("Oleh 086_092_097_108"),
-
               const SizedBox(height: 20),
 
               usernameField(usernameController),
