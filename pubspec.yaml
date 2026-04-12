@@ -37,10 +37,10 @@ dependencies:
 
   decimal: ^2.3.3
 
-  intl: ^0.18.0
+  intl: ^0.20.2
   hijri: ^3.0.0
   google_fonts: ^6.1.0
-
+  device_preview: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
