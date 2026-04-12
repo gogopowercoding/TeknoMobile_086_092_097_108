@@ -93,3 +93,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  assets:
+  - assets/images/hiro.jpeg
+  - assets/images/martin.jpeg
+  - assets/images/faisal.jpeg
+  - assets/images/fuu.png

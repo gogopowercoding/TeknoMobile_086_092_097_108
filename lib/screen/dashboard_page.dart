@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:teknomobile_086_092_097_108/screen/konversitanggalhijriah_page.dart';
 import 'login_page.dart';
 
+import 'profile_page.dart';
 import 'penjumlahan_page.dart';
 import 'ganjil_genap_page.dart';
 import 'jumlah_total_page.dart';
@@ -24,6 +25,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   List menu = [
     {
+
       "title": "Penjumlahan & Pengurangan",
       "icon": Icons.calculate,
       "page": const PenjumlahanPage()
@@ -84,41 +86,18 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           },
         ),
-
+        backgroundColor:  Colors.blue[50],
         title: Text("Halo ${widget.username}, selamat datang!"),
         actions: [
           IconButton(
             icon: const Icon(Icons.group),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Anggota Kelompok Multilator'),
-                    content: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('123230086 Hiero Purbandono'),
-                        SizedBox(height: 8),
-                        Text('123230092 Martin Aji Nugraha'),
-                        SizedBox(height: 8),
-                        Text('123230097 Faisal Dani Noto Leogowo'),
-                        SizedBox(height: 8),
-                        Text('123230108 Furraihan Al Harits'),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Tutup'),
-                      ),
-                    ],
-                  );
-                },
-              );
+                Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ),
+            );
             },
           ),
         ],
