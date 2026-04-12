@@ -87,6 +87,9 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
             const SizedBox(height: 20),
 
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
               onPressed: cekBilangan,
               child: const Text("Cek Bilangan"),
             ),
