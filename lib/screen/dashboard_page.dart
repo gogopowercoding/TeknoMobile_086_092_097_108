@@ -8,6 +8,7 @@ import 'jumlah_total_page.dart';
 import 'stopwatch_page.dart';
 import 'piramid_page.dart';
 import 'age_calculator_page.dart';
+import 'kalendersaka_page.dart';
 
 class DashboardPage extends StatefulWidget {
 
@@ -56,6 +57,11 @@ class _DashboardPageState extends State<DashboardPage> {
       "title": "Kalkulator Umur",
       "icon": Icons.cake,
       "page": const AgeCalculatorPage()
+    },
+    {
+      "title": "Kalender Saka",
+      "icon": Icons.calendar_month,
+      "page": const KalendersakaPage()
     },
 
   ];

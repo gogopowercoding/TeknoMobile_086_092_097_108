@@ -26,7 +26,7 @@ class _GanjilGenapPageState extends State<GanjilGenapPage> {
 
     // ERROR 2: jika bukan angka
     if (angka == null) {
-      tampilkanError("Input harus berupa angka");
+      tampilkanError("Input harus berupa bilangan bulat");
       return;
     }
 
