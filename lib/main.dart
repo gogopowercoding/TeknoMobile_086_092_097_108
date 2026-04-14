@@ -22,11 +22,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      useInheritedMediaQuery: true, // WAJIB untuk device_preview
+      useInheritedMediaQuery: true, 
       debugShowCheckedModeBanner: false,
 
-      locale: DevicePreview.locale(context), // biar ikut device
-      builder: DevicePreview.appBuilder, // penting juga
+      locale: DevicePreview.locale(context), 
+      builder: DevicePreview.appBuilder,
 
       theme: ThemeData(
         fontFamily: GoogleFonts.poppins().fontFamily,
